@@ -1,13 +1,9 @@
-from reportlab.lib.pagesizes import A4
-from reportlab.lib import colors
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Image, Table, TableStyle
-from reportlab.lib.units import inch
+from fpdf import FPDF
 import os
 import re
 
 def generate_pdf(content, filename, title):
-    """Generate a PDF file from the provided content"""
+    """Generate a PDF file from the provided content using fpdf2"""
     # Create directory for PDFs if it doesn't exist
     pdf_dir = "generated_pdfs"
     if not os.path.exists(pdf_dir):
@@ -16,79 +12,68 @@ def generate_pdf(content, filename, title):
     # Full path for the PDF file
     pdf_path = os.path.join(pdf_dir, filename)
     
-    # Create the PDF document
-    doc = SimpleDocTemplate(
-        pdf_path,
-        pagesize=A4,
-        rightMargin=72,
-        leftMargin=72,
-        topMargin=72,
-        bottomMargin=72
-    )
+    # Create PDF object
+    pdf = FPDF(orientation='P', unit='mm', format='A4')
+    pdf.add_page()
     
-    # Styles
-    styles = getSampleStyleSheet()
-    styles.add(ParagraphStyle(
-        name='CustomHeading1',
-        parent=styles['Heading1'],
-        fontSize=18,
-        spaceAfter=12,
-        textColor=colors.darkgreen
-    ))
-    styles.add(ParagraphStyle(
-        name='CustomHeading2',
-        parent=styles['Heading2'],
-        fontSize=16,
-        spaceAfter=10,
-        textColor=colors.darkgreen
-    ))
-    styles.add(ParagraphStyle(
-        name='CustomHeading3',
-        parent=styles['Heading3'],
-        fontSize=14,
-        spaceAfter=8,
-        textColor=colors.darkgreen
-    ))
-    styles.add(ParagraphStyle(
-        name='CustomNormal',
-        parent=styles['Normal'],
-        fontSize=12,
-        spaceAfter=6
-    ))
-    
-    # Content elements
-    elements = []
+    # Set up fonts
+    pdf.set_font('helvetica', 'B', 18)
+    pdf.set_text_color(0, 100, 0)  # Dark green
     
     # Add title
-    elements.append(Paragraph(f"<b>{title}</b>", styles['CustomHeading1']))
-    elements.append(Spacer(1, 0.25*inch))
+    pdf.cell(0, 10, title, ln=True, align='C')
+    pdf.ln(5)
     
     # Process the markdown content
     lines = content.split('\n')
     i = 0
+    
     while i < len(lines):
         line = lines[i].strip()
         
         # Handle headings
         if line.startswith('# '):
-            elements.append(Paragraph(line[2:], styles['CustomHeading1']))
+            pdf.set_font('helvetica', 'B', 16)
+            pdf.set_text_color(0, 100, 0)  # Dark green
+            pdf.cell(0, 10, line[2:], ln=True)
+            pdf.ln(2)
         elif line.startswith('## '):
-            elements.append(Paragraph(line[3:], styles['CustomHeading2']))
+            pdf.set_font('helvetica', 'B', 14)
+            pdf.set_text_color(0, 100, 0)  # Dark green
+            pdf.cell(0, 8, line[3:], ln=True)
+            pdf.ln(2)
         elif line.startswith('### '):
-            elements.append(Paragraph(line[4:], styles['CustomHeading3']))
+            pdf.set_font('helvetica', 'B', 12)
+            pdf.set_text_color(0, 100, 0)  # Dark green
+            pdf.cell(0, 8, line[4:], ln=True)
+            pdf.ln(2)
         # Handle lists
         elif line.startswith('- ') or line.startswith('* '):
-            elements.append(Paragraph(f"• {line[2:]}", styles['CustomNormal']))
+            pdf.set_font('helvetica', '', 12)
+            pdf.set_text_color(0, 0, 0)  # Black
+            pdf.cell(5, 6, '•', ln=0)
+            pdf.cell(0, 6, line[2:], ln=True)
         elif re.match(r'^\d+\.', line):
+            pdf.set_font('helvetica', '', 12)
+            pdf.set_text_color(0, 0, 0)  # Black
             num, text = line.split('.', 1)
-            elements.append(Paragraph(f"{num}. {text}", styles['CustomNormal']))
+            pdf.cell(10, 6, f"{num}.", ln=0)
+            pdf.cell(0, 6, text.strip(), ln=True)
         # Handle normal text
         elif line:
-            elements.append(Paragraph(line, styles['CustomNormal']))
+            pdf.set_font('helvetica', '', 12)
+            pdf.set_text_color(0, 0, 0)  # Black
+            # Handle long text by using multi_cell
+            pdf.multi_cell(0, 6, line)
+            pdf.ln(1)
+        
+        # Add a small space after each paragraph
+        if line:
+            pdf.ln(1)
         
         i += 1
     
-    # Build the PDF
-    doc.build(elements)
+    # Save the PDF
+    pdf.output(pdf_path)
     
     return pdf_path
