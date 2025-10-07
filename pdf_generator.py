@@ -51,7 +51,7 @@ def generate_pdf(content, filename, title):
         elif line.startswith('- ') or line.startswith('* '):
             pdf.set_font('helvetica', '', 12)
             pdf.set_text_color(0, 0, 0)  # Black
-            pdf.cell(5, 6, '•', ln=0)
+            pdf.cell(5, 6, '-', ln=0)
             pdf.cell(0, 6, line[2:], ln=True)
         elif re.match(r'^\d+\.', line):
             pdf.set_font('helvetica', '', 12)
