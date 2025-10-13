@@ -30,9 +30,14 @@ pip install -r requirements.txt
 
 ```bash
 streamlit run app.py
+
+or
+
+python -m streamlit run app.py
 ```
 
 2. Enter your Google Generative AI API key when prompted
+
    - If you don't have an API key, you can get one from [Google AI Studio](https://makersuite.google.com/app/apikey)
 
 3. Fill in your personal details, preferences, and goals in the sidebar
@@ -50,6 +55,7 @@ streamlit run app.py
 ## Customization
 
 You can customize the application by:
+
 - Modifying the prompts in the `generate_diet_plan` and `generate_workout_plan` functions
 - Adjusting the UI styling in the CSS section
 - Adding additional input fields for more personalized plans
