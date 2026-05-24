@@ -114,7 +114,7 @@ if api_key:
 def generate_diet_plan(user_data):
     """Generate a diet plan based on user data using Google's Generative AI"""
     try:
-        model = genai.GenerativeModel('gemini-2.0-flash-001')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         prompt = f"""
         Create a detailed, personalized 7-day diet plan for a person with the following characteristics:
@@ -150,7 +150,7 @@ def generate_diet_plan(user_data):
 def generate_workout_plan(user_data):
     """Generate a workout plan based on user data using Google's Generative AI"""
     try:
-        model = genai.GenerativeModel('gemini-2.0-flash-001')
+        model = genai.GenerativeModel('gemini-2.5-flash')
         
         prompt = f"""
         Create a detailed, personalized 7-day workout plan for a person with the following characteristics:
